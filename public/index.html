@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+<link rel="canonical" href="https://transgenderok.com" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+<title>TransgenderOk</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+</head>
+
+<body>
+    <div id="app">
+        <v-app>
+          <v-app-bar app flat>
+            <v-container class="py-0 fill-height">
+                <v-btn icon href="/" class="mr-2">
+                    <v-avatar >
+                        <img src="/logo.png" alt="transok">
+                    </v-avatar>
+                </v-btn>
+                <v-btn text href="/articles.html" small class="mr-2">
+                  articles
+                </v-btn>
+                <v-spacer></v-spacer>
+                <v-btn icon @click="switchTheme">
+                    <v-icon>mdi-theme-light-dark</v-icon>
+                </v-btn>
+            </v-container>
+          </v-app-bar>
+
+          <v-main>
+            <v-container>
+              <v-row>
+                <v-col>
+                  <v-sheet min-height="70vh" rounded="lg" elevation="1" class="pa-2">
+
+                    <h1>TransgenderOk</h1>
+                    <span class="subtitle-1">resources for trans and gender non conforming people in Oklahoma</span>
+                    <br><br>
+                    <span class="caption">
+                      tap on the map to find resources in that region
+                    </span>
+
+
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 2000 1160">
+                      <image width="2000" height="1160" xlink:href="/okregions.png"></image>
+
+                      <a xlink:href="/northwest.html" alt="northwest">
+                        <polygon points="35,85 28,228 698,258 690,591 894,506 1140,525 1210,450 1290,415 1290,120" fill="transparent"></polygon>
+                      </a>
+
+                      <a xlink:href="/southwest.html" alt="southwest">
+                        <polygon points="692,616 901,520 1138,548 1190,652 1292,691 1342,846 1336,1064 685,836" fill="transparent"></polygon>
+                      </a>
+
+                      <a xlink:href="/southeast.html" alt="southeast">
+                        <polygon points="1350,1060 1362,850 1316,690 1365,660 1401,634 1430,584 1693,551 1968,553 1968,1077" fill="transparent"></polygon>
+                      </a>
+
+                      <a xlink:href="/okc.html" alt="okc">
+                        <polygon points="1290,427 1345,450 1410,494 1417,532 1408,597 1362,647 1294,678 1212,662 1148,542 1190,473" fill="transparent"></polygon>
+                      </a>
+
+                      <a xlink:href="/tulsa.html" alt="tulsa">
+                        <polygon points="1508,330 1584,296 1658,284 1713,303 1736,355 1739,392 1725,422 1708,434 1671,444 1625,442 1553,418 1508,388" fill="transparent"></polygon>
+                      </a>
+
+                      <a xlink:href="/northeast.html" alt="northeast">
+                        <polygon points="1315,345 1302,120 1908,112 1930,345 1742,345 1721,300 1672,278 1635,279 1590,290 1514,315 1497,345" fill="transparent"></polygon>
+                      </a>
+                      <a xlink:href="/northeast.html" alt="northeast">
+                        <polygon points="1315,345 1497,345 1507,390 1544,420 1628,445 1686,445 1716,433 1739,405 1742,345 1930,345 1958,542 1690,540 1430,560 1427,512 1377,461 1312,422 1320,368" fill="transparent"></polygon>
+                      </a>
+                    </svg>
+
+                    <v-btn text href="https://discord.gg/AsMbUwdEBG" small class="mr-2">
+                      <v-icon>mdi-discord</v-icon> Join our community <v-icon>mdi-discord</v-icon>
+                    </v-btn>
+                  </v-sheet>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-main>
+
+        </v-app>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+    <script>
+        var app = new Vue({
+            el: '#app',
+            vuetify: new Vuetify({
+                theme: {
+                    themes:{
+                        light:{},
+                        dark:{}
+                    }
+                }
+            }),
+            data:{
+            },
+            created:function(){
+                this.$vuetify.theme.dark = localStorage.getItem('dark') === null ? true : localStorage.getItem('dark') === 'true'
+            },
+            methods:{
+                switchTheme:function(){
+                    this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+                    localStorage.setItem('dark',this.$vuetify.theme.dark)
+                }
+            },
+        })
+    </script>
+</body>
+</html>

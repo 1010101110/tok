@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "@fastify/static": "^6.10.2",
+    "fastify": "^4.20.0",
+    "fastify-https-redirect": "^1.0.4",
+    "fastify-static": "^4.7.0",
+    "pg": "^8.11.2"
+  }
+}
