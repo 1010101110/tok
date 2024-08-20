@@ -1,0 +1,407 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/@mdi/font@6.x/css/materialdesignicons.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.min.css" rel="stylesheet">
+<link rel="canonical" href="https://transgenderok.com" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+<title>Resources - TransgenderOk</title>
+
+</head>
+
+<body style="opacity: 0;">
+  <div id="app">
+    <v-app>
+      <v-app-bar app flat>
+        <v-container class="pa-0 fill-height">
+            <v-btn icon href="/" class="mr-2">
+                <v-avatar >
+                    <img src="/logo.png" alt="transok">
+                </v-avatar>
+            </v-btn>
+            <v-menu v-if="$vuetify.breakpoint.smAndDown" bottom>
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn icon v-bind="attrs" v-on="on">
+                  <v-icon>mdi-menu</v-icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item link href="/articles.html">
+                  <v-list-item-title>articles</v-list-item-title>
+                </v-list-item>
+                <v-list-item link href="/resources.html">
+                  <v-list-item-title>resources</v-list-item-title>
+                </v-list-item>
+                <v-list-item link href="https://discord.gg/AsMbUwdEBG">
+                  <v-list-item-title>discord</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+            <div v-else>
+              <v-btn text href="/articles.html" small class="mr-2">
+                articles
+              </v-btn>
+              <v-btn text href="/articles.html" small class="mr-2">
+                resources
+              </v-btn>
+              <v-btn text href="" small class="mr-2">
+                community
+              </v-btn>
+            </div>
+
+            <v-spacer></v-spacer>
+            <v-btn icon @click="switchTheme">
+                <v-icon>mdi-theme-light-dark</v-icon>
+            </v-btn>
+        </v-container>
+      </v-app-bar>
+
+      <v-main>
+        <v-container>
+          <v-row wrap>
+            <!-- list filters -->
+            <v-col cols="12" sm="3" md="2" v-show="!resource" key="reourcefilter">
+              <v-expand-transition>
+                <v-sheet rounded="lg" v-show="!$vuetify.breakpoint.xs || filterExpand">
+                  <v-list color="transparent" dense>
+                    <v-list-item>
+                      <v-text-field v-model="filterText" prepend-icon="mdi-magnify" placeholder="text search" dense hide-details @input="debounceFilter"></v-text-field>
+                    </v-list-item>
+                    <v-subheader>type</v-subheader>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="Medical" v-model="filterMedical" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="Therapy" v-model="filterTherapy" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="Support" v-model="filterSupport" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="Places" v-model="filterPlaces" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-subheader>location</v-subheader>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="Tulsa" v-model="filterTulsa" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="OKC" v-model="filterOKC" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="NorthEast" v-model="filterNE" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="NorthWest" v-model="filterNW" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="SouthEast" v-model="filterSE" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                    <v-list-item>
+                      <v-checkbox dense hide-details label="SouthWest" v-model="filterSW" @change="setFilter"></v-checkbox>
+                    </v-list-item>
+                  </v-list>
+                </v-sheet>
+              </v-expand-transition>
+              <v-btn v-if="$vuetify.breakpoint.xs" @click="filterExpand = !filterExpand">
+                filters
+              </v-btn>
+            </v-col>
+
+            <!-- resource list -->
+            <v-col cols="12" sm="9" md="10" v-show="!resource" key="resourcelist">
+              <v-sheet v-for="r in resources" rounded="lg" class="pa-2 mb-2" :key="r.id">
+                  <div> {{r.title}} </div>
+                  <v-btn @click="viewResource(r.id)"> details </v-btn>
+              </v-sheet>
+              <v-progress-circular indeterminate :size="70" color="purple lighten-3" v-show="!rawResources"></v-progress-circular>
+            </v-col>
+
+            <!-- resource detail -->
+            <v-col cols="12" sm="9" md="10" v-show="resource" key="resourceview">
+              <v-card>
+                {{resource}}
+                <v-btn @click="viewResource()">back to resources list</v-btn>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-main>
+    </v-app>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vuetify@2.x/dist/vuetify.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lodash@4.x/lodash.min.js"></script>
+
+  <script>
+      window.app = new Vue({
+          el: '#app',
+          vuetify: new Vuetify({
+              theme: {
+                  themes:{
+                      light:{},
+                      dark:{}
+                  }
+              }
+          }),
+          data:{
+            filterExpand:null,
+            filterMedical:false,
+            filterTherapy:false,
+            filterSupport:false,
+            filterPlaces:false,
+            filterTulsa:false,
+            filterOKC:false,
+            filterNE:false,
+            filterNW:false,
+            filterSE:false,
+            filterSW:false,
+            filterText:'',
+            rawResources:null,
+            resources:null,
+            resource:null,
+            debounceFilter:null,
+          },
+          created: async function(){
+            this.$vuetify.theme.dark = localStorage.getItem('dark') === null ? true : localStorage.getItem('dark') === 'true'
+            this.debounceFilter = _.debounce(this.filterList, 400)
+            this.getResources()
+          },
+          mounted:function(){
+            document.body.style.transition = 'opacity .5s ease-in'
+            document.body.style.opacity = 1;
+          },
+          methods:{
+            getResources:async function(){
+              //get data
+              var resp = await fetch('/api/res/all')
+              if(resp.ok){
+                this.rawResources = await resp.json()
+              }
+              this.parseUrl()
+            },
+            parseUrl:function(){
+              const urlParams = new URLSearchParams(window.location.search);
+
+              //specific resource view
+              var id = urlParams.get('id');
+              var resource = null
+              if(id){
+                resource = this.resources.find(r => r.id == id)
+              }
+              if(resource){
+                this.resource = resource
+              }else{
+                this.resource = null
+                document.title = 'Resources - TransgenderOK'
+              }
+
+              //filter list filter view
+              var filter = urlParams.get('filter');
+              if(filter){
+                //split them up
+                var filters = filter.split('|')
+                //set them
+                this.filterMedical = filters.includes('m')
+                this.filterTherapy = filters.includes('t')
+                this.filterSupport = filters.includes('s')
+                this.filterPlaces = filters.includes('p')
+                this.filterTulsa = filters.includes('tul')
+                this.filterOKC = filters.includes('okc')
+                this.filterNE = filters.includes('ne')
+                this.filterNW = filters.includes('nw')
+                this.filterSE = filters.includes('se')
+                this.filterSW = filters.includes('sw')
+              }else{
+                //no filters
+                this.filterMedical = false
+                this.filterTherapy = false
+                this.filterSupport = false
+                this.filterPlaces = false
+                this.filterTulsa = false
+                this.filterOKC = false
+                this.filterNE = false
+                this.filterNW = false
+                this.filterSE = false
+                this.filterSW = false
+              }
+              this.filterList()
+            },
+            switchTheme:function(){
+              this.$vuetify.theme.dark = !this.$vuetify.theme.dark
+              localStorage.setItem('dark',this.$vuetify.theme.dark)
+            },
+            setFilter(){
+              const params = new URLSearchParams()
+              var filter = ''
+
+              //resource types
+              if(this.filterMedical){
+                filter += 'm'
+              }
+              if(this.filterTherapy){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 't'
+              }
+              if(this.filterSupport){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 's'
+              }
+              if(this.filterPlaces){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 'p'
+              }
+
+              //resource locations
+              if(this.filterTulsa){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 'tul'
+              }
+              if(this.filterOKC){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 'okc'
+              }
+              if(this.filterNE){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 'ne'
+              }
+              if(this.filterNW){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 'nw'
+              }
+              if(this.filterSE){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 'se'
+              }
+              if(this.filterSW){
+                filter += filter.length > 0 ? '|' : ''
+                filter += 'sw'
+              }
+
+              if(filter){
+                params.set('filter',filter)
+              }else{
+                params.delete('filter')
+              }
+              var newurl = window.location.origin + window.location.pathname + (params.size > 0 ? '?' : '') + params.toString()
+              window.history.pushState({path:newurl},'',newurl)
+              this.parseUrl()
+            },
+            viewResource:function(rid){
+              const params = new URLSearchParams(window.location.search)
+              if(rid){
+                params.set('id',rid)
+              }else{
+                params.delete('id')
+              }
+              var newurl = window.location.origin + window.location.pathname + (params.size > 0 ? '?' : '') + params.toString()
+              window.history.pushState({path:newurl},'',newurl)
+              this.parseUrl()
+            },
+            filterList:function(){
+              if(this.rawResources){
+                this.resources = this.rawResources.filter(r => {
+                  //default to true for no filters
+                  var ret = true
+
+                  if(window.app.filterMedical){
+                    if(r.res_type.includes('medical')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterTherapy){
+                    if(r.res_type.includes('therapy')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterSupport){
+                    if(r.res_type.includes('support')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterPlaces){
+                    if(r.res_type.includes('place')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+
+                  if(window.app.filterTulsa){
+                    if(r.res_region.includes('tulsa')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterOKC){
+                    if(r.res_region.includes('okc')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterNE){
+                    if(r.res_region.includes('ne')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterNW){
+                    if(r.res_region.includes('nw')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterSE){
+                    if(r.res_region.includes('se')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+                  if(window.app.filterSW){
+                    if(r.res_region.includes('sw')){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+
+                  if(window.app.filterText){
+                    if(
+                      r.title.includes(window.app.filterText)
+                      || r.markdown.includes(window.app.filterText)
+                      || r.website.includes(window.app.filterText)
+                      || r.email.includes(window.app.filterText)
+                      || r.phone.includes(window.app.filterText)
+                    ){
+                      ret = true
+                    }else{
+                      ret = false
+                    }
+                  }
+
+                  return ret
+                })
+              }
+            },
+          },
+      })
+
+      window.addEventListener('popstate', (ev) =>{
+        window.app.parseUrl();
+      })
+  </script>
+</body>
+</html>
